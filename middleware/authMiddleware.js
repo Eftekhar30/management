@@ -1,21 +1,28 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+require('dotenv').config(); // Ensure it can read your local .env
 
 const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization')
+    const authHeader = req.header('Authorization');
 
-    if(!token){
-        return res.status(400).json({message: "Access Denied"})
+    if (!authHeader) {
+        return res.status(401).json({ message: "Access Denied: No token provided" });
     }
 
+    try {
+        // The frontend sends "Bearer [token_string]". We split by space and grab the 2nd part.
+        const actualToken = authHeader.split(" ")[1];
 
-    try{
-        const verified = jwt.verify(actualToken, "my_super_secret_key")
+        // Use the Render/Local Environment Variable, or fallback to your hardcoded one
+        const secret = process.env.JWT_SECRET || "my_super_secret_key";
+        
+        const verified = jwt.verify(actualToken, secret);
 
-        req.user = verified
-        next()
-    } catch(error){
-        res.status(400).json({message: "invalid or expired token"})
+        req.user = verified;
+        next();
+    } catch (error) {
+        console.error("JWT Verification Error:", error.message);
+        res.status(400).json({ message: "invalid or expired token" });
     }
-}
+};
 
-module.exports= verifyToken
+module.exports = verifyToken;

@@ -1,6 +1,7 @@
-const User = require('../models/user');
+const User = require('../models/user'); // Ensure lowercase matches your file
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 exports.register = async (req, res) => {
     const { email, fullName, studentId, department, password } = req.body;
@@ -28,7 +29,13 @@ exports.login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-        const token = jwt.sign({ id: user.id, role: user.role }, "my_super_secret_key", { expiresIn: "1h" });
+        // Upgraded to use Environment Variable AND include fullName for the Notice Board
+        const secret = process.env.JWT_SECRET || "my_super_secret_key";
+        const token = jwt.sign(
+            { id: user.id, role: user.role, fullName: user.fullName }, 
+            secret, 
+            { expiresIn: "1h" }
+        );
 
         res.status(200).json({
             message: "Login Successful",
