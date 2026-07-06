@@ -16,8 +16,8 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "https://management-frontend-five.vercel.app",
-    "management-frontend-git-main-g3nix.vercel.app",
-    "management-frontend-omxly2br6-g3nix.vercel.app"
+    "https://management-frontend-git-main-g3nix.vercel.app",
+    "https://management-frontend-omxly2br6-g3nix.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
